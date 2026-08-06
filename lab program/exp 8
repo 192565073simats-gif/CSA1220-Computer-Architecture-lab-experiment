@@ -1,0 +1,58 @@
+; 16-bit / 16-bit Division using Restoring Division method
+                ; HL = Dividend --> becomes Quotient
+                ; DE = Remainder accumulator
+                ; BC = Divisor
+
+START:          MVI A, 10H       ; Counter = 16 bits
+                 STA COUNT
+
+                 LDA 2002H       ; Load divisor low byte
+                 MOV C, A
+                 LDA 2003H       ; Load divisor high byte
+                 MOV B, A        ; BC = Divisor
+
+                 LHLD 2000H      ; HL = Dividend
+                 LXI D, 0000H    ; DE = 0 (Remainder = 0 initially)
+
+LOOP:            DAD H           ; Shift HL left (dividend/quotient), CY = old MSB
+                 MOV A, E
+                 ADC A           ; Shift DE left, bring in CY from HL
+                 MOV E, A
+                 MOV A, D
+                 ADC A
+                 MOV D, A        ; DE = DE*2 + carry-in from HL
+
+                 ; Try subtracting Divisor (BC) from Remainder (DE)
+                 MOV A, E
+                 SUB C
+                 MOV E, A
+                 MOV A, D
+                 SBB B
+                 MOV D, A
+
+                 JC RESTORE       ; If borrow occurs, restore DE and quotient bit = 0
+
+                 MOV A, L         ; Subtraction successful -> set quotient bit = 1
+                 ORI 01H
+                 MOV L, A
+                 JMP NEXT
+
+RESTORE:         MOV A, E         ; Undo subtraction (add divisor back)
+                 ADD C
+                 MOV E, A
+                 MOV A, D
+                 ADC B
+                 MOV D, A         ; Quotient bit remains 0
+
+NEXT:            LDA COUNT
+                 DCR A
+                 STA COUNT
+                 JNZ LOOP
+
+                 SHLD 2004H       ; Store Quotient (HL)
+                 XCHG             ; HL = DE (Remainder)
+                 SHLD 2006H       ; Store Remainder
+
+                 HLT
+
+COUNT:           DB 00H
