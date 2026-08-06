@@ -1,0 +1,12 @@
+LDA 2000H       ; Load first number into accumulator
+                MOV B, A        ; Store it in register B
+
+                LDA 2001H       ; Load second number into accumulator
+                CMP B           ; Compare A (2nd number) with B (1st number)
+
+                JNC STORE       ; If A >= B (No Carry), A is greater, go to STORE
+                MOV A, B        ; Else, B (1st number) is greater, move it to A
+
+STORE:          STA 2002H       ; Store the greatest number at 2002H
+
+                HLT             ; Stop execution

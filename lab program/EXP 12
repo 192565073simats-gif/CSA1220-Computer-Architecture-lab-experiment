@@ -1,0 +1,5 @@
+LDA 2000H       ; Load the 8-bit number into accumulator
+                CMA             ; Complement the accumulator (1's complement)
+                STA 2001H       ; Store the result at 2001H
+
+                HLT             ; Stop execution

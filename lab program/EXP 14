@@ -1,0 +1,12 @@
+LDA 2000H       ; Load the 8-bit number into accumulator
+                ANI 01H         ; Mask all bits except LSB (bit 0)
+                JZ EVEN         ; If result is 0, number is Even
+
+                MVI A, 01H      ; Number is Odd, load 01H
+                JMP STORE
+
+EVEN:           MVI A, 00H      ; Number is Even, load 00H
+
+STORE:          STA 2001H       ; Store the result at 2001H
+
+                HLT             ; Stop execution

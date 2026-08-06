@@ -1,0 +1,12 @@
+LDA 2000H       ; Load the 8-bit number into accumulator
+                ANI 80H         ; Mask all bits except MSB (bit 7 - sign bit)
+                JZ POSITIVE     ; If result is 0, MSB = 0, number is Positive
+
+                MVI A, 01H      ; MSB = 1, number is Negative
+                JMP STORE
+
+POSITIVE:       MVI A, 00H      ; Number is Positive
+
+STORE:          STA 2001H       ; Store the result at 2001H
+
+                HLT             ; Stop execution
