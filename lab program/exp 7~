@@ -1,0 +1,72 @@
+; Program: Multiply two 16-bit numbers in 8085
+; Author: Senior-level implementation
+; Method: Repeated addition
+; Data:
+;   8000H - Low byte of first number
+;   8001H - High byte of first number
+;   8002H - Low byte of second number
+;   8003H - High byte of second number
+; Result:
+;   8050H - Low byte of result
+;   8051H - Next byte
+;   8052H - Next byte
+;   8053H - High byte of result
+
+        ORG 8000H
+
+; Load first number into DE register pair
+        LXI     H, 8000H     ; HL points to first number
+        MOV     E, M         ; E = low byte of first number
+        INX     H
+        MOV     D, M         ; D = high byte of first number
+
+; Load second number into BC register pair
+        INX     H
+        MOV     C, M         ; C = low byte of second number
+        INX     H
+        MOV     B, M         ; B = high byte of second number
+
+; Initialize result registers (32-bit result in HL pair + extra registers)
+        LXI     H, 0000H     ; HL = lower 16 bits of result
+        LXI     SP, 0000H    ; We'll use SP as temporary storage (not stack)
+        LXI     SP, 0000H    ; Clear SP
+        LXI     SP, 0000H    ; Just ensuring zero
+
+        MVI     A, 0
+        STA     8052H        ; Clear 3rd byte of result
+        STA     8053H        ; Clear 4th byte of result
+
+; Outer loop: Repeat for each bit of multiplier (BC)
+MULT_LOOP:
+        MOV     A, C         ; Check low byte of multiplier
+        ORA     B
+        JZ      DONE         ; If multiplier is zero, done
+
+        ; Add multiplicand (DE) to result (HL + extra bytes)
+        DAD     D            ; HL = HL + DE
+        ; Handle carry into higher bytes
+        JNC     NO_CARRY
+        ; Carry into 3rd byte
+        LDA     8052H
+        INR     A
+        STA     8052H
+        JNZ     NO_CARRY
+        ; Carry into 4th byte
+        LDA     8053H
+        INR     A
+        STA     8053H
+NO_CARRY:
+
+        ; Decrement multiplier (BC)
+        DCX     B
+        JMP     MULT_LOOP
+
+DONE:
+; Store result
+        SHLD    8050H        ; Store low 2 bytes
+        LDA     8052H
+        STA     8052H
+        LDA     8053H
+        STA     8053H
+
+        HLT                 ; End program

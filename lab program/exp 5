@@ -1,0 +1,10 @@
+LHLD 8050H      ; Load first 16-bit number into HL
+XCHG            ; Copy HL to DE
+
+LHLD 8052H      ; Load second 16-bit number into HL
+
+DAD D           ; HL = HL + DE
+
+SHLD 8054H      ; Store the 16-bit result
+
+HLT             ; Stop execution

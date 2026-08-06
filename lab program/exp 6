@@ -1,0 +1,16 @@
+LHLD 8050H      ; Load first 16-bit number into HL
+XCHG            ; Move first number to DE
+
+LHLD 8052H      ; Load second 16-bit number into HL
+
+MOV A,E         ; Subtract LSB
+SUB L
+MOV L,A
+
+MOV A,D         ; Subtract MSB with borrow
+SBB H
+MOV H,A
+
+SHLD 8054H      ; Store result
+
+HLT             ; Stop execution
