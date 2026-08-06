@@ -1,6 +1,0 @@
-LDA 2000H       ; Load the 8-bit number into accumulator
-                CMA             ; Take 1's complement (invert all bits)
-                INR A           ; Add 1 to get 2's complement
-                STA 2001H       ; Store the result at 2001H
-
-                HLT             ; Stop execution
