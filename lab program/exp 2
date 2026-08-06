@@ -1,0 +1,12 @@
+LDA 8050H      ; Load first number
+MOV B,A        ; Store it in register B
+
+LDA 8051H      ; Load second number
+MOV C,A        ; Store it in register C
+
+MOV A,B        ; Move first number back to Accumulator
+SUB C          ; A = A - C
+
+STA 8052H      ; Store result at 8052H
+
+HLT            ; Stop execution

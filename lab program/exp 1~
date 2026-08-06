@@ -1,0 +1,9 @@
+LDA 8050H      ; Load first 8-bit number into Accumulator
+MOV B,A        ; Store first number in register B
+
+LDA 8051H      ; Load second 8-bit number
+ADD B          ; Add first number to second number
+
+STA 8052H      ; Store the result
+
+HLT            ; Stop execution
