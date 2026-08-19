@@ -1,0 +1,37 @@
+START:            LXI H, 0000H    ; HL = result = 0
+
+; ---------- Add Hundreds digit x 100 ----------
+                   LDA 2000H       ; A = hundreds digit
+                   MOV C, A        ; C = counter = hundreds digit
+HUND_LOOP:         MOV A, C
+                   ORA A
+                   JZ TENS_START   ; If counter = 0, skip
+                   LXI D, 0064H    ; DE = 100 (decimal)
+                   DAD D           ; HL = HL + 100
+                   DCR C
+                   JMP HUND_LOOP
+
+; ---------- Add Tens digit x 10 ----------
+TENS_START:        LDA 2001H       ; A = tens digit
+                   MOV C, A        ; C = counter = tens digit
+TENS_LOOP:         MOV A, C
+                   ORA A
+                   JZ UNITS_START  ; If counter = 0, skip
+                   LXI D, 000AH    ; DE = 10 (decimal)
+                   DAD D           ; HL = HL + 10
+                   DCR C
+                   JMP TENS_LOOP
+
+; ---------- Add Units digit x 1 ----------
+UNITS_START:        LDA 2002H       ; A = units digit
+                   MOV C, A        ; C = counter = units digit
+UNITS_LOOP:         MOV A, C
+                   ORA A
+                   JZ CONVERT_DONE ; If counter = 0, skip
+                   INX H           ; HL = HL + 1
+                   DCR C
+                   JMP UNITS_LOOP
+
+CONVERT_DONE:       SHLD 2003H      ; Store result: low byte->2003H, high byte->2004H
+
+                   HLT             ; Stop execution

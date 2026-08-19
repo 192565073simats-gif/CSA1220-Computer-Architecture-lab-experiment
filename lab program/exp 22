@@ -1,0 +1,29 @@
+START:            LDA 2000H       ; Load n into accumulator
+                   MOV C, A        ; C = n (outer loop counter / multiplier)
+                   LXI H, 0001H    ; HL = result = 1 (0! = 1! = 1)
+
+                   MOV A, C
+                   CPI 02H         ; Check if n < 2
+                   JC DONE         ; If n = 0 or n = 1, result stays 1
+
+MULT_N:            MOV B, C        ; B = inner loop counter = current value of C
+                   LXI D, 0000H    ; DE = 0 (product accumulator)
+
+INNER:             MOV A, E        ; Add HL (current result) into DE, B times
+                   ADD L
+                   MOV E, A
+                   MOV A, D
+                   ADC H
+                   MOV D, A
+                   DCR B
+                   JNZ INNER       ; Repeat until B = 0
+
+                   XCHG            ; HL = DE (new running product)
+                   DCR C           ; Decrement multiplier
+                   MOV A, C
+                   CPI 01H
+                   JNZ MULT_N      ; Continue until C = 1
+
+DONE:              SHLD 2001H      ; Store 16-bit result (L->2001H, H->2002H)
+
+                   HLT             ; Stop execution
