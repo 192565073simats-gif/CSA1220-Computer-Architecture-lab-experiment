@@ -1,0 +1,22 @@
+START:            LDA 2000H       ; Load first number
+                   MOV B, A        ; B = num1
+                   LDA 2001H       ; Load second number
+                   MOV C, A        ; C = num2
+
+GCD_LOOP:          MOV A, B        ; A = B
+                   CMP C           ; Compare B with C
+                   JZ GCD_DONE     ; If B = C, GCD found
+                   JC B_LESS       ; If B < C, jump to subtract B from C
+                   SUB C           ; Else B = B - C
+                   MOV B, A
+                   JMP GCD_LOOP
+
+B_LESS:            MOV A, C        ; A = C
+                   SUB B           ; C = C - B
+                   MOV C, A
+                   JMP GCD_LOOP
+
+GCD_DONE:          MOV A, B        ; GCD is now in B (B = C)
+                   STA 2002H       ; Store GCD at 2002H
+
+                   HLT             ; Stop execution

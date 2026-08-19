@@ -1,0 +1,28 @@
+                LXI H, 2000H    ; HL points to count location
+                MOV C, M        ; C = number of elements (N)
+                DCR C           ; Outer loop counter = N-1
+
+OUTER:          PUSH B          ; Save outer loop counter
+                LXI H, 2001H    ; HL points to start of array (reset for each pass)
+                MOV B, C        ; B = inner loop counter (N-1 for this pass)
+
+INNER:          MOV A, M        ; A = current element
+                INX H           ; Point to next element
+                CMP M           ; Compare A with next element
+                JNC SKIP        ; If A >= next element (no swap needed), skip
+
+                MOV D, M        ; Swap: D = next element
+                MOV E, A        ; E = current element (A)
+                MOV M, E        ; Store current element in next position
+                DCX H
+                MOV M, D        ; Store next element in current position
+                INX H
+
+SKIP:           DCR B           ; Decrement inner loop counter
+                JNZ INNER       ; Repeat inner loop until B = 0
+
+                POP B           ; Restore outer loop counter
+                DCR C           ; Decrement outer loop counter
+                JNZ OUTER       ; Repeat outer loop until C = 0
+
+                HLT             ; Stop execution

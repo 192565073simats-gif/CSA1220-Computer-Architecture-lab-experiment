@@ -1,0 +1,19 @@
+                LXI H, 2000H    ; HL points to count location
+                MOV C, M        ; C = number of elements (N)
+                INX H           ; HL points to start of array (2001H)
+
+                MOV A, M        ; A = first element (assume it's largest initially)
+                DCR C           ; Decrement count (N-1 comparisons remain)
+
+BACK:           INX H           ; Point to next element
+                CMP M           ; Compare A (largest so far) with next element
+                JNC SKIP        ; If A >= M (no carry), A is still largest, skip
+
+                MOV A, M        ; Else, update A with the new larger element
+
+SKIP:           DCR C           ; Decrement counter
+                JNZ BACK        ; Repeat until all elements are compared
+
+                STA 3000H       ; Store the largest number at 3000H
+
+                HLT             ; Stop execution

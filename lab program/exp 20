@@ -1,0 +1,66 @@
+START:           LDA 2000H       ; Load first number
+                  MOV B, A        ; B = num1
+                  LDA 2001H       ; Load second number
+                  MOV C, A        ; C = num2
+
+; ---------- STEP 1: Find GCD (Euclidean subtraction method) ----------
+GCD_LOOP:         MOV A, B
+                  CMP C
+                  JZ GCD_DONE     ; If B = C, GCD found
+                  JC B_LESS       ; If B < C, go subtract B from C
+                  SUB C           ; Else B = B - C
+                  MOV B, A
+                  JMP GCD_LOOP
+
+B_LESS:           MOV A, C
+                  SUB B           ; C = C - B
+                  MOV C, A
+                  JMP GCD_LOOP
+
+GCD_DONE:         MOV A, B        ; GCD is now in B (B = C)
+                  STA 2005H       ; Store GCD
+
+; ---------- STEP 2: Multiply num1 x num2 (repeated addition) ----------
+                  LXI H, 0000H    ; HL = product = 0
+                  LDA 2000H
+                  MOV E, A        ; E = num1 (low byte of multiplicand)
+                  MVI D, 00H      ; D = 0 (high byte)
+                  LDA 2001H
+                  MOV C, A        ; C = num2 (loop counter)
+
+MUL_LOOP:         MOV A, C
+                  ORA A
+                  JZ MUL_DONE     ; If counter = 0, multiplication done
+                  DAD D           ; HL = HL + num1
+                  DCR C
+                  JMP MUL_LOOP
+
+; ---------- STEP 3: Divide product by GCD (repeated subtraction) ----------
+MUL_DONE:         LXI B, 0000H    ; BC = quotient (LCM) = 0
+                  LDA 2005H
+                  MOV E, A        ; E = GCD (divisor)
+                  MVI D, 00H
+
+DIV_LOOP:         MOV A, H
+                  CMP D
+                  JC DIV_DONE     ; If HL < divisor, stop
+                  JNZ SUBTRACT
+                  MOV A, L
+                  CMP E
+                  JC DIV_DONE
+
+SUBTRACT:         MOV A, L
+                  SUB E
+                  MOV L, A
+                  MOV A, H
+                  SBB D
+                  MOV H, A
+                  INX B           ; quotient++
+                  JMP DIV_LOOP
+
+DIV_DONE:         MOV A, C
+                  STA 2003H       ; Store LCM low byte
+                  MOV A, B
+                  STA 2004H       ; Store LCM high byte
+
+                  HLT             ; Stop execution

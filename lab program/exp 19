@@ -1,0 +1,19 @@
+                LXI H, 2000H    ; HL points to count location
+                MOV C, M        ; C = number of elements (N)
+                INX H           ; HL points to start of array (2001H)
+
+                MOV A, M        ; A = first element (assume it's smallest initially)
+                DCR C           ; Decrement count (N-1 comparisons remain)
+
+BACK:           INX H           ; Point to next element
+                CMP M           ; Compare A (smallest so far) with next element
+                JC SKIP         ; If A < M (Carry set), A is still smallest, skip
+
+                MOV A, M        ; Else, update A with the new smaller element
+
+SKIP:           DCR C           ; Decrement counter
+                JNZ BACK        ; Repeat until all elements are compared
+
+                STA 2006H       ; Store the smallest number at 2006H
+
+                HLT             ; Stop execution
