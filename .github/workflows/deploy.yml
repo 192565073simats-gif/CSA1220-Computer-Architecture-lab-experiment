@@ -36,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: "capstone project/CPU-Cache-Simulator"
-        run: npm ci
+        run: npm install
 
       - name: Build project
         working-directory: "capstone project/CPU-Cache-Simulator"
